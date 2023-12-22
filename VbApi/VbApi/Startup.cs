@@ -12,7 +12,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        
+        services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Startup>());
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
     }

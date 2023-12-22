@@ -33,3 +33,29 @@ public class StaffController : ControllerBase
         return value;
     }
 }
+
+public class StaffValidator : AbstractValidator<Staff>
+{
+
+    public StaffValidator()
+    {
+        RuleFor(x => x.Email).EmailAdress().WithMessage("Email address is not valid.");
+        RuleFor(x => x.Name).NotEmpty()
+            .WithMessage("Name is required.")
+            .Length(10, 250)
+            .WithMessage("Name length must be between 10 and 250 characters.");
+
+        RuleFor(x => x.Phone)
+            .Phone()
+            .WithMessage("Phone is not valid.");
+        
+        RuleFor(x => x.HourlySalary)
+            .InclusiveBetween(30, 400)
+            .WithMessage("Hourly salary does not fall within allowed range.");
+    }
+
+
+}
+
+
+
