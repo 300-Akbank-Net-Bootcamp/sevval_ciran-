@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VbApi.Controllers;
@@ -81,25 +82,31 @@ public class EmployeeValidator : AbstractValidator<Employee>
 
     public EmployeeValidator()
     {
-        RuleFor(x => x.Email).EmailAdress().WithMessage("Email address is not valid.");
+        RuleFor(x => x.Email).EmailAddress().WithMessage("Email address is not valid.");
 
         RuleFor(x => x.Name).NotEmpty()
             .WithMessage("Name is required.")
             .Length(10, 250)
             .WithMessage("Name length must be between 10 and 250 characters.");
-
         RuleFor(x => x.Phone)
-            .Phone()
-            .WithMessage("Phone is not valid.");
+                    .Custom((phone, context) =>
+                    {
+                        if (!IsValidPhoneNumber(phone))
+                        {
+                            context.AddFailure("Phone is not valid.");
+                        }
+                    });
 
         RuleFor(x => x.HourlySalary)
             .InclusiveBetween(30, 400)
             .WithMessage("Hourly salary does not fall within allowed range.");
 
-        RuleFor(x => x.DateOfBirth)
-           .Must(BeAValidBirthDate)
-           .WithMessage("Birthdate is not valid.");
     }
 
+    private bool IsValidPhoneNumber(string phone)
+    {
+        
+        return !string.IsNullOrEmpty(phone) && phone.Length == 10 && phone.All(char.IsDigit);
+    }
 
 }
